@@ -3,7 +3,7 @@
 
 //Constants-----------
 #define PIN 6
-#define nLEDS 109
+#define nLEDS 15
 #define ledBright 255
 
 //Variables-----------
@@ -27,37 +27,47 @@ byte neopix_gamma[] = {
   177,180,182,184,186,189,191,193,196,198,200,203,205,208,210,213,
   215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
 
+//The 15 LEDS at the top of the cabinet.
+int topLow = 0;
+int topHigh = 15;
+//The 47 LEDS at the side of the cabinet.
+int sideLow = 15;
+int sideHigh = 62;
+//The 47 LEDS at the opposite side of the cabinet.
+int oppSideLow = 62;
+int oppSideHigh = 109;
+  
 //--------------------
-void setup() {
-// put your setup code here, to run once:
-
+void setup()
+//--------------------
+{
   Serial.begin(9600);
   strip.setBrightness(ledBright);
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
-
 }
 
 //--------------------
-void loop() {
-// put your main code here, to run repeatedly:
-
-  //function name(delay between colors, how many times does the pattern cycle);
-  rainbow(20, 2);
-  lightsOff(20, 1);
-  rainbowCycle(20, 5);
-  lightsOff(20, 1);
-  //rainbowFade2White(3,3,1);
-  //lightsOff(20, 1);
+void loop() 
+//--------------------
+{
+  //function name(delay between colors, how many times does the pattern cycles);
   
+  //Rapid rainbow cycle ----------
+  //rainbowFade2White(1, 10);
+  //Pulse UCF Bright Gold ----------
+  //brightGoldFade(1, 3);
+  //Smooth raninbow transition ----------
+  rainbow(30, 25);
 }
 
+//--------------------
 //Light Patterns
 //--------------------
+
+/*//--------------------
 void lightsOff(uint8_t wait, uint8_t cycles){
   uint16_t i, j;
-  
-  Serial.println("Lights Off");
 
   for(j=0; j<256*cycles; j++) {
     for(i=0; i<nLEDS; i++) {
@@ -67,16 +77,14 @@ void lightsOff(uint8_t wait, uint8_t cycles){
     delay(wait);
   }
   
-}
+}*/
 
 //--------------------
 void rainbow(uint8_t wait, uint8_t cycles) {
   uint16_t i, j;
 
-  Serial.println("Rainbow Mode");
-
   for(j=0; j<256*cycles; j++) {
-    for(i=0; i<nLEDS; i++) {
+    for(i=topLow; i<topHigh; i++) {
       strip.setPixelColor(i, rainbowWheel((i+j) & 255));
     }
     strip.show();
@@ -85,12 +93,10 @@ void rainbow(uint8_t wait, uint8_t cycles) {
   
 }
 
-//--------------------
-// Slightly different, this makes the rainbow equally distributed throughout
+/*//--------------------
+//Slightly different, this makes the rainbow equally distributed throughout
 void rainbowCycle(uint8_t wait, uint8_t cycles) {
   uint16_t i, j;
-
-  Serial.println("Rainbow Cycle Mode");
 
   for(j=0; j<256*cycles; j++) {
     for(i=0; i<nLEDS; i++) {
@@ -100,10 +106,10 @@ void rainbowCycle(uint8_t wait, uint8_t cycles) {
     delay(wait);
   }
   
-}
+}*/
 
 //--------------------
-void rainbowFade2White(uint8_t wait, int rainbowLoops, int whiteLoops) {
+void rainbowFade2White(uint8_t wait, int rainbowLoops) {
   float fadeMax = 100.0;
   int fadeVal = 0;
   uint32_t wheelVal;
@@ -113,9 +119,9 @@ void rainbowFade2White(uint8_t wait, int rainbowLoops, int whiteLoops) {
     
     for(int j=0; j<256; j++) { // 5 cycles of all colors on wheel
 
-      for(int i=0; i< strip.numPixels(); i++) {
+      for(int i=0; i< nLEDS; i++) {
 
-        wheelVal = rainbowWheel(((i * 256 / strip.numPixels()) + j) & 255);
+        wheelVal = rainbowWheel(((i * 256 / nLEDS) + j) & 255);
 
         redVal = red(wheelVal) * float(fadeVal/fadeMax);
         greenVal = green(wheelVal) * float(fadeVal/fadeMax);
@@ -132,6 +138,46 @@ void rainbowFade2White(uint8_t wait, int rainbowLoops, int whiteLoops) {
 
       //Last loop, fade out!
       else if(k == rainbowLoops - 1 && j > 255 - fadeMax ){
+          fadeVal--;
+      }
+        strip.show();
+        delay(wait);
+    }
+  }
+  
+  delay(500);
+}
+
+//--------------------
+void brightGoldFade(uint8_t wait, int goldLoops) {
+  float fadeMax = 100.0;
+  int fadeVal = 0;
+  uint32_t wheelVal;
+  int redVal, greenVal, blueVal;
+
+  for(int k = 0 ; k < goldLoops ; k ++){
+    
+    for(int j=0; j<256; j++) { // 5 cycles of all colors on wheel
+
+      for(int i=0; i< nLEDS; i++) {
+
+        //wheelVal = strip.Color(255, 202, 6, 255);
+
+        redVal = 255 * float(fadeVal/fadeMax);
+        greenVal = 202 * float(fadeVal/fadeMax);
+        blueVal = 6 * float(fadeVal/fadeMax);
+
+        strip.setPixelColor( i, strip.Color( redVal, greenVal, blueVal ) );
+
+      }
+
+      //First loop, fade in!
+      if(k == 0 && fadeVal < fadeMax-1) {
+          fadeVal++;
+      }
+
+      //Last loop, fade out!
+      else if(k == goldLoops - 1 && j > 255 - fadeMax ){
           fadeVal--;
       }
         strip.show();
