@@ -3,7 +3,7 @@
 
 //Constants-----------
 #define PIN 6
-#define nLEDS 15
+#define nLEDS 109
 #define ledBright 255
 
 //Variables-----------
@@ -27,15 +27,15 @@ byte neopix_gamma[] = {
   177,180,182,184,186,189,191,193,196,198,200,203,205,208,210,213,
   215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
 
-//The 15 LEDS at the top of the cabinet.
-int topLow = 0;
-int topHigh = 15;
-//The 47 LEDS at the side of the cabinet.
-int sideLow = 15;
-int sideHigh = 62;
-//The 47 LEDS at the opposite side of the cabinet.
-int oppSideLow = 62;
-int oppSideHigh = 109;
+//-----The 15 LEDS at the top of the cabinet.
+//int topLow = 0;
+//int topHigh = 15;
+//-----The 47 LEDS at the side of the cabinet.
+//int sideLow = 15;
+//int sideHigh = 62;
+//-----The 47 LEDS at the opposite side of the cabinet.
+//int oppSideLow = 62;
+//int oppSideHigh = 109;
   
 //--------------------
 void setup()
@@ -51,12 +51,12 @@ void setup()
 void loop() 
 //--------------------
 {
-  //function name(delay between colors, how many times does the pattern cycles);
+  //Key ----------
+  //brightGoldFade(delay between colors,number of pattern cycles,fade interval);
   
-  //Rapid rainbow cycle ----------
-  //rainbowFade2White(1, 10);
-  //Pulse UCF Bright Gold ----------
-  //brightGoldFade(1, 3);
+  //rainbowFade2White(1, 1);
+  //brightGoldFade(1, 2);
+  //lightsOff(1,1);
   //Smooth raninbow transition ----------
   rainbow(30, 25);
 }
@@ -65,7 +65,7 @@ void loop()
 //Light Patterns
 //--------------------
 
-/*//--------------------
+//--------------------
 void lightsOff(uint8_t wait, uint8_t cycles){
   uint16_t i, j;
 
@@ -77,14 +77,14 @@ void lightsOff(uint8_t wait, uint8_t cycles){
     delay(wait);
   }
   
-}*/
+}
 
 //--------------------
 void rainbow(uint8_t wait, uint8_t cycles) {
   uint16_t i, j;
 
   for(j=0; j<256*cycles; j++) {
-    for(i=topLow; i<topHigh; i++) {
+    for(i=0; i<nLEDS; i++) {
       strip.setPixelColor(i, rainbowWheel((i+j) & 255));
     }
     strip.show();
@@ -149,8 +149,8 @@ void rainbowFade2White(uint8_t wait, int rainbowLoops) {
 }
 
 //--------------------
-void brightGoldFade(uint8_t wait, int goldLoops) {
-  float fadeMax = 100.0;
+void brightGoldFade(uint8_t wait, int goldLoops, int goldFade) {
+  float fadeMax = goldFade;
   int fadeVal = 0;
   uint32_t wheelVal;
   int redVal, greenVal, blueVal;
