@@ -27,6 +27,8 @@ byte neopix_gamma[] = {
   177,180,182,184,186,189,191,193,196,198,200,203,205,208,210,213,
   215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
 
+  char lightType[20];
+
 //-----The 15 LEDS at the top of the cabinet.
 //int topLow = 0;
 //int topHigh = 15;
@@ -42,6 +44,7 @@ void setup()
 //--------------------
 {
   Serial.begin(9600);
+  //pinMode(PIN, OUTPUT);
   strip.setBrightness(ledBright);
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
@@ -65,7 +68,7 @@ void loop()
 //Light Patterns
 //--------------------
 
-//--------------------
+//Turn off lights --------------------
 void lightsOff(uint8_t wait, uint8_t cycles){
   uint16_t i, j;
 
