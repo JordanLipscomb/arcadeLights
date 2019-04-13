@@ -1,5 +1,6 @@
-//Library-------------
+//Libraries-------------
 #include <Adafruit_NeoPixel.h>
+#include <SimpleTimer.h>
 
 //Constants-----------
 #define PIN 6
@@ -9,11 +10,14 @@
 //Variables-----------
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(nLEDS, PIN, NEO_RGBW + NEO_KHZ800);
 char lightType[20];
+int lf = 10;
+SimpleTimer timer;
+int timerId;
 
 void setup()
 {
   Serial.begin(9600);
-  //pinMode(PIN, OUTPUT);
+  timerId = timer.setTimeout(600000, mainPattern);
   strip.setBrightness(ledBright);
   strip.begin();
   strip.show(); // Initialize all pixels to "off"
@@ -25,8 +29,8 @@ void loop()
   //The "if" statments below read the bytes being sent from the game.
   //Depending on the string sent from the game, the LEDS will change color.
   //The strings are labeled in quotes within the "if" statments.
-  int lf = 10; 
   Serial.readBytesUntil(lf, lightType, 2);
+  timer.run();
 
   //LEDS are turned On
   if (strcmp(lightType, "on")==0){
@@ -38,7 +42,7 @@ void loop()
   }
   //LEDS are turned Rainbow
   if (strcmp(lightType, "rb")==0){
-    rainbow(30, 25);
+    rainbow(30,1);
   }
   //LEDS are turned Off
   if (strcmp(lightType, "of")==0){
@@ -49,6 +53,11 @@ void loop()
 //--------------------
 //Light Patterns
 //--------------------
+
+void mainPattern(){
+  strncpy(lightType, "rb", 20);
+  timer.restartTimer(timerId);
+}
 
 void on(uint8_t wait, uint8_t cycles)
 {
@@ -78,16 +87,16 @@ void red(uint8_t wait, uint8_t cycles)
 
 void rainbow(uint8_t wait, uint8_t cycles) {
   uint16_t i, j;
-
+  
   for(j=0; j<256*cycles; j++) {
     for(i=0; i<nLEDS; i++) {
       strip.setPixelColor(i, rainbowWheel((i+j) & 255));
     }
     strip.show();
     delay(wait);
+    }
   }
-  
-}
+
 
 void off(uint8_t wait, uint8_t cycles)
 {
