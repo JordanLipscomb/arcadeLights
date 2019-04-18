@@ -3,25 +3,42 @@
 #include <SimpleTimer.h>
 
 //Constants-----------
-#define PIN 6
-#define nLEDS 109
-#define ledBright 255
+#define PIN 6 //This is the pin the LEDS are receiving information from.
+#define nLEDS 109 //The number of LEDS in the series
+#define ledBright 255 //How bright the leds get
 
 //Variables-----------
+//Neopixel
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(nLEDS, PIN, NEO_RGBW + NEO_KHZ800);
+
+//Color Control
 char lightType[20];
 int lf = 10;
+
+//Timer
 SimpleTimer timer;
 int timerId;
+int resetLightDelay = 600000;
+char resetLightChars[20] = "rb";
+
+
+
+
 
 void setup()
 {
   Serial.begin(9600);
-  timerId = timer.setTimeout(600000, mainPattern);
+  
+  timerId = timer.setInterval(resetLightDelay, mainPattern);
+  
   strip.setBrightness(ledBright);
   strip.begin();
   strip.show(); // Initialize all pixels to "off"
 }
+
+
+
+
 
 void loop()
 {
@@ -29,8 +46,8 @@ void loop()
   //The "if" statments below read the bytes being sent from the game.
   //Depending on the string sent from the game, the LEDS will change color.
   //The strings are labeled in quotes within the "if" statments.
-  Serial.readBytesUntil(lf, lightType, 2);
   timer.run();
+  Serial.readBytesUntil(lf, lightType, 2);
 
   //LEDS are turned On
   if (strcmp(lightType, "on")==0){
@@ -50,54 +67,20 @@ void loop()
   }
 }
 
-//--------------------
-//Light Patterns
-//--------------------
 
+
+
+
+//--------------------
+//Light Colors and Patterns
+//--------------------
+//This is the default pattern that runs after a set time.
 void mainPattern(){
-  strncpy(lightType, "rb", 20);
+  strncpy(lightType, resetLightChars, 20);
   timer.restartTimer(timerId);
 }
-
-void on(uint8_t wait, uint8_t cycles)
-{
-  uint16_t i, j;
-
-  for(j=0; j<256*cycles; j++) {
-    for(i=0; i<nLEDS; i++) {
-     strip.setPixelColor(i, 255, 255, 255);
-    }
-    strip.show();
-    delay(wait);
-  }
-}
-
-void red(uint8_t wait, uint8_t cycles)
-{
-  uint16_t i, j;
-
-  for(j=0; j<256*cycles; j++) {
-    for(i=0; i<nLEDS; i++) {
-     strip.setPixelColor(i, 0, 255, 0);
-    }
-    strip.show();
-    delay(wait);
-  }
-}
-
-void rainbow(uint8_t wait, uint8_t cycles) {
-  uint16_t i, j;
-  
-  for(j=0; j<256*cycles; j++) {
-    for(i=0; i<nLEDS; i++) {
-      strip.setPixelColor(i, rainbowWheel((i+j) & 255));
-    }
-    strip.show();
-    delay(wait);
-    }
-  }
-
-
+//--------------------
+//No Light
 void off(uint8_t wait, uint8_t cycles)
 {
   uint16_t i, j;
@@ -110,12 +93,57 @@ void off(uint8_t wait, uint8_t cycles)
     delay(wait);
   }
 }
+//--------------------
+//White Light
+void on(uint8_t wait, uint8_t cycles)
+{
+  uint16_t i, j;
+
+  for(j=0; j<256*cycles; j++) {
+    for(i=0; i<nLEDS; i++) {
+     strip.setPixelColor(i, 255, 255, 255);
+    }
+    strip.show();
+    delay(wait);
+  }
+}
+//--------------------
+//Red Light
+void red(uint8_t wait, uint8_t cycles){
+  uint16_t i, j;
+
+  for(j=0; j<256*cycles; j++) {
+    for(i=0; i<nLEDS; i++) {
+     strip.setPixelColor(i, 0, 255, 0);
+    }
+    strip.show();
+    delay(wait);
+  }
+}
+//--------------------
+//Rainbow Pattern
+void rainbow(uint8_t wait, uint8_t cycles) {
+  uint16_t i, j;
+  
+  for(j=0; j<256*cycles; j++) {
+    for(i=0; i<nLEDS; i++) {
+      strip.setPixelColor(i, rainbowWheel((i+j) & 255));
+    }
+    strip.show();
+    delay(wait);
+  }
+}
+
+
+
+
 
 //--------------------
-//Color Pickers
+//Color Picker
 //--------------------
-// Input a value 0 to 255 to get a color value.
-// The colours are a transition r - g - b - back to r.
+//Functions that run the colors and patterns above
+//Input a value 0 to 255 to get a color value.
+//The colours are a transition r - g - b - back to r.
 uint32_t rainbowWheel(byte WheelPos) {
   
   WheelPos = 255 - WheelPos;
