@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class arcadeLightController : MonoBehaviour
 {
-    public static SerialPort sp = new SerialPort("COM6", 9600);
+    public static SerialPort sp = new SerialPort("COM3", 9600);
 
     // Start is called before the first frame update
     void Start()
@@ -18,6 +18,12 @@ public class arcadeLightController : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void LEDSoff()
+    {
+        sp.Write("of");
+        Debug.Log("off");
     }
 
     public void LEDSon()
@@ -32,15 +38,33 @@ public class arcadeLightController : MonoBehaviour
         Debug.Log("red");
     }
 
-    public void LEDSrainbow()
+    public void LEDSviolet()
     {
-        sp.Write("rb");
-        Debug.Log("rainbow");
+        sp.Write("vo");
+        Debug.Log("violet");
     }
 
-    public void LEDSoff()
+    public void LEDSblue()
     {
-        sp.Write("of");
-        Debug.Log("off");
+        sp.Write("bu");
+        Debug.Log("blue");
+    }
+
+    public void LEDSgreen()
+    {
+        sp.Write("gr");
+        Debug.Log("green");
+    }
+
+    public void LEDSyellow()
+    {
+        sp.Write("yl");
+        Debug.Log("yellow");
+    }
+
+    public void LEDSorange()
+    {
+        sp.Write("og");
+        Debug.Log("orange");
     }
 }

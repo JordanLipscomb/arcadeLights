@@ -18,14 +18,15 @@ public class userTest : MonoBehaviour
         
     }
 
-    public void turnLightOn()
-    {
-        arcadeLightController alc = alcObject.GetComponent<arcadeLightController>();
-        alc.LEDSon();
-    }
     public void turnLightOff()
     {
         arcadeLightController alc = alcObject.GetComponent<arcadeLightController>();
         alc.LEDSoff();
+    }
+
+    public void turnLightOn()
+    {
+        arcadeLightController alc = alcObject.GetComponent<arcadeLightController>();
+        alc.LEDSon();
     }
 }
